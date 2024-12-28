@@ -84,3 +84,38 @@
 (rule "Pad to Track clearance"
 	(constraint clearance (min 0.2mm))
 	(condition "A.isPlated() && B.Type == 'track'"))
+
+# Copper to Edge Clearance
+(rule "Copper to Edge Clearance"
+    (constraint edge_clearance (min 0.2mm))
+    (condition "A.Type == 'track' || A.Type == 'zone'"))
+
+# Minimum Annular Ring
+(rule "Minimum Annular Ring"
+    (constraint annular_ring (min 0.1mm))
+    (condition "A.Type == 'via' || A.Type == 'pad'"))
+
+# Minimum Solder Mask Clearance
+(rule "Minimum Solder Mask Clearance"
+    (constraint solder_mask_clearance (min 0.1mm))
+    (condition "A.Type == 'pad' || A.Type == 'via'"))
+
+# Minimum Solder Mask Sliver
+(rule "Minimum Solder Mask Sliver"
+    (constraint solder_mask_sliver (min 0.1mm))
+    (condition "A.Type == 'pad' || A.Type == 'via'"))
+
+# Copper Pour Clearance
+(rule "Copper Pour Clearance"
+    (constraint clearance (min 0.2mm))
+    (condition "A.Type == 'zone'"))
+
+# Via Aspect Ratio
+(rule "Via Aspect Ratio"
+    (constraint via_aspect_ratio (max 10))
+    (condition "A.Type == 'via'"))
+
+# Thermal Reliefs
+(rule "Thermal Reliefs"
+    (constraint thermal_reliefs (min 0.2mm))
+    (condition "A.Type == 'pad' || A.Type == 'via'"))
