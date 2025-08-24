@@ -1,0 +1,203 @@
+(version 1)
+# Custom Design Rules (DRC) for KiCAD 9.0 (2 Layers 2 oz PCB) (Stored in '<project>.kicad_dru' file).
+#
+# Matching JLCPCB capabilities: https://jlcpcb.com/capabilities/pcb-capabilities
+#
+# KiCad documentation: https://docs.kicad.org/master/id/pcbnew/pcbnew_advanced.html#custom_design_rules
+#
+# Last revision: 2025-08-25
+
+############ PCB Specifications ############
+(rule "This DRC file is for 2 Layers 2 oz PCB"
+	(severity error)
+	(layer inner)
+	(constraint track_width (min 99999mm))
+)
+
+################# Drilling #################
+(rule "Mechanical Drill Hole Size"
+	(constraint hole_size (min 0.15mm) (max 6.3mm))
+)
+
+(rule "Blind/Buried Vias (Not Supported)"
+	(condition "A.Type == 'via' && A.Layer != 'outer'")
+	(constraint hole_size (min 99999mm))
+)
+
+(rule "Minimum Via Hole Size"
+	(severity error)
+	(condition "A.Type == 'via'")
+	(constraint hole_size (min 0.15mm))
+)
+(rule "Minimum Via Hole Size (preferred)"
+	(severity warning)
+	(condition "A.Type == 'via'")
+	(constraint hole_size (min 0.2mm))
+)
+
+(rule "Minimum Via Diameter"
+	(severity error)
+	(condition "A.Type == 'via'")
+	(constraint via_diameter (min 0.25mm))
+)
+(rule "Minimum Via Diameter (preferred)"
+	(severity warning)
+	(condition "A.Type == 'via'")
+	(constraint via_diameter (min 0.35mm))
+)
+
+(rule "NPTH Hole Size"
+	(layer outer)
+	(condition "!A.isPlated()")
+	(constraint hole_size (min 0.5mm))
+)
+
+(rule "Via to Via Clearance"
+	(condition "A.Type == 'via' && B.Type == A.Type")
+	(constraint hole_to_hole (min 0.2mm))
+)
+
+(rule "Pad Hole-to-Hole Spacing"
+	(condition "A.Type == 'pad' && B.Type == A.Type")
+	(constraint hole_to_hole (min 0.45mm))
+)
+
+(rule "Castellated Hole Size"
+	(layer outer)
+	(condition "A.Type == 'pad' && A.Fabrication_Property == 'Castellated pad'")
+	(constraint hole_size (min 0.6mm))
+)
+
+
+################## Traces ##################
+(rule "Minimum Track Width"
+	(condition "A.Type == 'track'")
+	(constraint track_width (min 0.16mm))
+)
+
+(rule "Minimum Track Clearance"
+	(condition "A.Type == 'track' && B.Type == A.Type")
+	(constraint clearance (min 0.16mm))
+)
+
+(rule "Annular Ring Width (PTH)"
+	(layer outer)
+	(condition "A.isPlated()")
+	(constraint annular_width (min 0.254))
+)
+
+(rule "Annular Ring Width (NPTH)"
+	(layer outer)
+	(condition "!A.isPlated()")
+	(constraint annular_width (min 0.45mm))
+)
+
+(rule "Same-net track spacing"
+	(condition "A.Type == 'track' && B.Type == A.Type && A.Net == B.Net")
+	(constraint clearance (min 0.25mm))
+)
+
+(rule "Pad to Track Clearance"
+	(condition "A.isPlated() && B.Type == 'track'")
+	# (condition "A.Type == 'pad' && B.Type == 'track' &&  A.Net != B.Net")
+	(constraint clearance (min 0.1mm))
+)
+
+(rule "SMD Pad to Pad Clearance"
+	(condition "A.Type == 'pad' && B.Type == A.Type && A.Net != B.Net")
+	(constraint clearance (min 0.15mm))
+)
+
+(rule "Via to Track Clearance"
+	(condition "A.Type == 'via' && B.Type == 'track'")
+	(constraint hole_clearance (min 0.2mm))
+)
+
+(rule "PTH to Track Clearance"
+	(severity error)
+	(condition "A.isPlated() && B.Type == 'track'")
+	(constraint hole_clearance (min 0.28mm))
+)
+(rule "PTH to Track Clearance (preferred)"
+	(severity warning)
+	(condition "A.isPlated() && B.Type == 'track'")
+	(constraint hole_clearance (min 0.35mm))
+)
+
+(rule "NPTH to Track Clearance"
+	(condition "A.Pad_Type == 'NPTH, mechanical' && B.Type == 'track'")
+# 	(condition "!A.isPlated() && B.Type == 'track'")
+	(constraint hole_clearance (min 0.2mm))
+)
+
+
+################ Soldermask ################
+# Soldermask Expansion
+# 0.038mm
+
+# Soldermask bridge
+(rule "Soldermask Bridge (green, red, yellow, blue, purple)"
+	(condition "A.Type == 'pad' && B.Type == A.Type && A.Net != B.Net")
+	(constraint clearance (min 0.20mm))
+)
+
+# (rule "Soldermask Bridge (bllack, white)"
+# 	(condition "A.Type == 'pad' && B.Type == A.Type && A.Net != B.Net")
+# 	(constraint clearance (min 0.23mm))
+# )
+
+
+################## Legend ##################
+(rule "Minimum Silkscreen Text Size"
+	(layer "?.Silkscreen")
+	(condition "A.Type == 'Text' || A.Type == 'Text Box'")
+	(constraint text_thickness (min 0.153mm))
+	(constraint text_height (min 1mm))
+)
+
+# Character width to height ratio
+# 1:6
+
+# Hollow-carved Character width to height ratio
+# 1:6
+
+(rule "Pad to Silkscreen Clearance"
+	(layer outer)
+	(condition "A.Type == 'pad' && B.Layer == '?.Silkscreen'")
+	(constraint silk_clearance (min 0.15mm))
+)
+
+
+################# Outline #################
+(rule "Copper to Board Edge Clearance"
+	(condition "A.Type == 'track' || A.Type == 'zone'")
+	(constraint edge_clearance (min 0.2mm))
+)
+
+#(rule "Edge (v-cut) to track clearance"
+#	(condition "A.Type == 'track' || A.Type == 'zone'")
+#	(constraint edge_clearance (min 0.4mm))
+#)
+
+# Mouse bites Panel
+# 0.2mm
+
+# Panelization with space
+# 2mm
+
+# Panel of Circular PCBs
+# >= 20x20mm
+
+############# Additional Rules #############
+(rule "Copper Pour to Copper Pour Clearance"
+	(condition "A.Type == 'zone'")
+	(constraint clearance (min 0.2mm))
+)
+
+(rule "Clearance: pad/via to pad/via"
+	(layer outer)
+#	(condition "(A.Type == 'Pad' || A.Type == 'Via') && (B.Type == 'Pad' || B.Type == 'Via') && A.Net != B.Net")	
+	(condition "A.isPlated() && B.isPlated() && A.Net != B.Net")
+	(constraint clearance (min 0.15mm))
+)
+
