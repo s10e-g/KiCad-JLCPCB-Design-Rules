@@ -77,7 +77,7 @@
 
 (rule "Annular Ring Width (PTH)"
 	(layer outer)
-	(condition "A.Pad_Type == 'Through-hole'")
+	(condition "A.Pad_Type == 'Through-hole' && A.Fabrication_Property != 'Heatsink pad'")
 	(constraint annular_width (min 0.254mm))
 )
 
