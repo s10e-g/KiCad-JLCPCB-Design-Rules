@@ -78,7 +78,7 @@
 (rule "Annular Ring Width (PTH)"
 	(layer outer)
 	(condition "A.Pad_Type == 'Through-hole'")
-	(constraint annular_width (min 0.254))
+	(constraint annular_width (min 0.254mm))
 )
 
 (rule "Annular Ring Width (NPTH)"
