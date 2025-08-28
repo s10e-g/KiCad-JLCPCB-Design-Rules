@@ -5,23 +5,18 @@
 #
 # KiCad documentation: https://docs.kicad.org/master/id/pcbnew/pcbnew_advanced.html#custom_design_rules
 #
-# Last revision: 2025-08-25
+# Last revision: 2025-08-28
 
 ############ PCB Specifications ############
 (rule "This DRC file is for 2 Layers 2 oz PCB"
 	(severity error)
 	(layer inner)
-	(constraint track_width (min 99999mm))
+	(constraint disallow track via micro_via buried_via pad zone hole footprint)
 )
 
 ################# Drilling #################
 (rule "Mechanical Drill Hole Size"
 	(constraint hole_size (min 0.15mm) (max 6.3mm))
-)
-
-(rule "Blind/Buried Vias (Not Supported)"
-	(condition "A.Type == 'via' && A.Layer != 'outer'")
-	(constraint hole_size (min 99999mm))
 )
 
 (rule "Minimum Via Hole Size"
@@ -48,7 +43,7 @@
 
 (rule "NPTH Hole Size"
 	(layer outer)
-	(condition "!A.isPlated()")
+	(condition "A.Pad_Type == 'NPTH, mechanical'")
 	(constraint hole_size (min 0.5mm))
 )
 
@@ -82,13 +77,13 @@
 
 (rule "Annular Ring Width (PTH)"
 	(layer outer)
-	(condition "A.isPlated()")
+	(condition "A.Pad_Type == 'Through-hole'")
 	(constraint annular_width (min 0.254))
 )
 
 (rule "Annular Ring Width (NPTH)"
 	(layer outer)
-	(condition "!A.isPlated()")
+	(condition "A.Pad_Type == 'NPTH, mechanical'")
 	(constraint annular_width (min 0.45mm))
 )
 
@@ -98,13 +93,12 @@
 )
 
 (rule "Pad to Track Clearance"
-	(condition "A.isPlated() && B.Type == 'track'")
-	# (condition "A.Type == 'pad' && B.Type == 'track' &&  A.Net != B.Net")
+	(condition "A.Type == 'pad' && B.Type == 'track' && A.Net != B.Net")
 	(constraint clearance (min 0.1mm))
 )
 
 (rule "SMD Pad to Pad Clearance"
-	(condition "A.Type == 'pad' && B.Type == A.Type && A.Net != B.Net")
+	(condition "A.Pad_Type == 'SMD' && B.Type == A.Type && A.Net != B.Net")
 	(constraint clearance (min 0.15mm))
 )
 
@@ -115,18 +109,17 @@
 
 (rule "PTH to Track Clearance"
 	(severity error)
-	(condition "A.isPlated() && B.Type == 'track'")
+	(condition "A.Pad_Type == 'Through-hole' && B.Type == 'track'")
 	(constraint hole_clearance (min 0.28mm))
 )
 (rule "PTH to Track Clearance (preferred)"
 	(severity warning)
-	(condition "A.isPlated() && B.Type == 'track'")
+	(condition "A.Pad_Type == 'Through-hole' && B.Type == 'track'")
 	(constraint hole_clearance (min 0.35mm))
 )
 
 (rule "NPTH to Track Clearance"
 	(condition "A.Pad_Type == 'NPTH, mechanical' && B.Type == 'track'")
-# 	(condition "!A.isPlated() && B.Type == 'track'")
 	(constraint hole_clearance (min 0.2mm))
 )
 
@@ -141,17 +134,20 @@
 	(constraint clearance (min 0.20mm))
 )
 
-# (rule "Soldermask Bridge (bllack, white)"
+# (rule "Soldermask Bridge (ignore this if your PCB is not Black or White)"
+# 	(severity warning)
 # 	(condition "A.Type == 'pad' && B.Type == A.Type && A.Net != B.Net")
 # 	(constraint clearance (min 0.23mm))
 # )
 
 
 ################## Legend ##################
+# Actural text thickness limit is "6-mil (0.153mm)"
+# but many default fonts in KiCad are 0.15mm
 (rule "Minimum Silkscreen Text Size"
 	(layer "?.Silkscreen")
 	(condition "A.Type == 'Text' || A.Type == 'Text Box'")
-	(constraint text_thickness (min 0.153mm))
+	(constraint text_thickness (min 0.15mm))
 	(constraint text_height (min 1mm))
 )
 
