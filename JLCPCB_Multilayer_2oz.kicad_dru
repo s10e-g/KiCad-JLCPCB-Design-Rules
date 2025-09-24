@@ -202,7 +202,7 @@
 
 ############# Additional Rules #############
 (rule "Copper Pour to Copper Pour Clearance"
-	(condition "A.Type == 'zone'")
+	(condition "A.Type == 'zone' && B.Type == A.Type && A.Net != B.Net")
 	(constraint clearance (min 0.2mm))
 )
 
